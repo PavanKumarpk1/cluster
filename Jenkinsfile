@@ -14,26 +14,31 @@ pipeline {
         }
 
         stage('Build & Push') {
-            steps {
-                script {
-                    // Use the ID 'docker-hub-credentials' we are creating in Step 2
-                    docker.withRegistry('https://index.docker.io/v1/', 'docker-hub-credentials') {
-                        
-                        echo 'Building & Pushing API 1...'
-                        docker.build("${DOCKER_USER}/api_1:${env.BUILD_NUMBER}", "./api_1").push()
+    steps {
+        script {
+            // Using shell commands instead of the 'docker' property
+            sh "echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USER} --password-stdin"
+            
+            echo 'Building API 1...'
+            sh "docker build -t ${DOCKER_USER}/api_1:${env.BUILD_NUMBER} ./api_1"
+            sh "docker push ${DOCKER_USER}/api_1:${env.BUILD_NUMBER}"
 
-                        echo 'Building & Pushing API 2...'
-                        docker.build("${DOCKER_USER}/api_2:${env.BUILD_NUMBER}", "./api_2").push()
+            echo 'Building API 2...'
+            sh "docker build -t ${DOCKER_USER}/api_2:${env.BUILD_NUMBER} ./api_2"
+            sh "docker push ${DOCKER_USER}/api_2:${env.BUILD_NUMBER}"
 
-                        echo 'Building & Pushing API 3...'
-                        docker.build("${DOCKER_USER}/api_3:${env.BUILD_NUMBER}", "./api_3").push()
+            echo 'Building API 3...'
+            sh "docker build -t ${DOCKER_USER}/api_3:${env.BUILD_NUMBER} ./api_3"
+            sh "docker push ${DOCKER_USER}/api_3:${env.BUILD_NUMBER}"
 
-                        echo 'Building & Pushing UI...'
-                        docker.build("${DOCKER_USER}/frontend:${env.BUILD_NUMBER}", "./frontend").push()
-                    }
-                }
-            }
+            echo 'Building UI...'
+            sh "docker build -t ${DOCKER_USER}/frontend:${env.BUILD_NUMBER} ./frontend"
+            sh "docker push ${DOCKER_USER}/frontend:${env.BUILD_NUMBER}"
+            
+            // Add your other APIs here...
         }
+    }
+}
 
         stage('Deploy to GKE') {
             steps {
