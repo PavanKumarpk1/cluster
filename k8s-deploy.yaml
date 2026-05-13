@@ -1,0 +1,103 @@
+# --- API 1 ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: store-api-1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-1
+  template:
+    metadata:
+      labels:
+        app: api-1
+    spec:
+      containers:
+      - name: api-1
+        image: paavan24/api_1:latest # Jenkins will update this tag
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-1-service
+spec:
+  selector:
+    app: api-1
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: ClusterIP # Internal only
+
+# --- API 2 ---
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: store-api-2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-2
+  template:
+    metadata:
+      labels:
+        app: api-2
+    spec:
+      containers:
+      - name: api-2
+        image: paavan24/api_2:latest
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-2-service
+spec:
+  selector:
+    app: api-2
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: ClusterIP
+
+# --- FRONTEND (UI) ---
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: store-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ui
+  template:
+    metadata:
+      labels:
+        app: ui
+    spec:
+      containers:
+      - name: ui
+        image: paavan24/frontend:latest
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ui-service
+spec:
+  selector:
+    app: ui
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer # This gives you an External IP to visit the website
