@@ -68,7 +68,7 @@
         // --- EXISTING FUNCTIONS ---
         async function sendData() {
             const val = document.getElementById('userInput').value;
-            await fetch('http://34.27.154.69:8001/write', {
+            await fetch('http://34.44.69.44:8001/write', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({text_entry: val})
@@ -78,7 +78,7 @@
         }
 
         async function getData() {
-            const response = await fetch('http://34.27.154.69:8002/read');
+            const response = await fetch('http://34.44.69.44:8002/read');
             const data = await response.json();
             const list = document.getElementById('list');
             list.innerHTML = data.entries.map(item => `<li>${item}</li>`).join('');
@@ -88,7 +88,7 @@
         async function fetchProducts() {
             try {
                 // Assuming your 3rd API is on Port 8003
-                const response = await fetch('http://34.27.154.69:8003/products');
+                const response = await fetch('http://34.44.69.44:8003/products');
                 const products = await response.json();
                 
                 const grid = document.getElementById('product-grid');
