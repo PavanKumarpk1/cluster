@@ -68,7 +68,7 @@
         // --- EXISTING FUNCTIONS ---
         async function sendData() {
             const val = document.getElementById('userInput').value;
-            await fetch('http://34.44.69.44:8001/write', {
+            await fetch('http://34.9.202.244:8001/write', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({text_entry: val})
@@ -88,7 +88,7 @@
         async function fetchProducts() {
             try {
                 // Assuming your 3rd API is on Port 8003
-                const response = await fetch('http://34.44.69.44:8003/products');
+                const response = await fetch('http://34.46.12.67:8003/products');
                 const products = await response.json();
                 
                 const grid = document.getElementById('product-grid');
