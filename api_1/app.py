@@ -10,7 +10,7 @@ def write_file():
     data = request.json.get('text_entry')
     
     if data:
-        with open("/data/memory.txt", "a") as f:
+        with open("memory.txt", "a") as f:
             f.write(data + "\n")
         return jsonify({"message": "Saved successfully!"}), 201
     return jsonify({"error": "No text provided"}), 400
