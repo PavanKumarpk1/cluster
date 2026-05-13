@@ -16,27 +16,23 @@ pipeline {
 
         stage('Build & Push') {
     steps {
-        script {
-            // Using shell commands instead of the 'docker' property
-            sh "echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USER} --password-stdin"
-            
-            echo 'Building API 1...'
-            sh "docker build -t ${DOCKER_USER}/api_1:${env.BUILD_NUMBER} ./api_1"
-            sh "docker push ${DOCKER_USER}/api_1:${env.BUILD_NUMBER}"
-
-            echo 'Building API 2...'
-            sh "docker build -t ${DOCKER_USER}/api_2:${env.BUILD_NUMBER} ./api_2"
-            sh "docker push ${DOCKER_USER}/api_2:${env.BUILD_NUMBER}"
-
-            echo 'Building API 3...'
-            sh "docker build -t ${DOCKER_USER}/api_3:${env.BUILD_NUMBER} ./api_3"
-            sh "docker push ${DOCKER_USER}/api_3:${env.BUILD_NUMBER}"
-
-            echo 'Building UI...'
-            sh "docker build -t ${DOCKER_USER}/frontend:${env.BUILD_NUMBER} ./frontend"
-            sh "docker push ${DOCKER_USER}/frontend:${env.BUILD_NUMBER}"
-            
-            // Add your other APIs here...
+        // Use this specific block to handle the password safely
+        withCredentials([usernamePassword(credentialsId: 'docker-hub-pass', 
+                                          passwordVariable: 'DOCKER_PASSWORD', 
+                                          usernameVariable: 'DOCKER_USER_VAR')]) {
+            script {
+                // Use single quotes ('') for the shell command to prevent Groovy interpolation
+                sh 'echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USER_VAR}" --password-stdin'
+                
+                def services = ['api_1', 'api_2', 'api_3']
+                services.each { name ->
+                    sh "docker build -t ${DOCKER_USER}/${name}:${env.BUILD_NUMBER} ./${name}"
+                    sh "docker push ${DOCKER_USER}/${name}:${env.BUILD_NUMBER}"
+                }
+                
+                sh "docker build -t ${DOCKER_USER}/frontend:${env.BUILD_NUMBER} ./frontend"
+                sh "docker push ${DOCKER_USER}/frontend:${env.BUILD_NUMBER}"
+            }
         }
     }
 }
