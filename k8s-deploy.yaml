@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: api-1
-        image: paavan24/api_1:latest 
+        image: paavan24/api_1:12
         ports:
         - containerPort: 8001 # Matches your app code
 ---
