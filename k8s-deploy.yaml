@@ -59,7 +59,7 @@ kind: Service
 metadata:
   name: api-2-service
 spec:
-  type: LoadBalancer # Changed to LoadBalancer
+  type: ClusterIP # Changed to LoadBalancer
   selector:
     app: api-2
   ports:
