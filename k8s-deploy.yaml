@@ -123,6 +123,9 @@ spec:
         image: paavan24/frontend:latest
         ports:
         - containerPort: 80
+        resources:           # <--- This is the part you need
+          requests:
+            cpu: "100m"
 ---
 apiVersion: v1
 kind: Service
