@@ -86,7 +86,8 @@ spec:
       # 1. ADDED: This container boots up first and places your file into the shared path
       initContainers:
       - name: data-provider
-        image: paavan24/api_3_data:latest  # The new data image built by Jenkins
+        image: paavan24/api_3_data:latest
+        imagePullPolicy: Always # The new data image built by Jenkins
         command: ["cp", "/data/products.json", "/shared/products.json"]
         volumeMounts:
         - name: product-data-volume
@@ -95,6 +96,7 @@ spec:
       containers:
       - name: api-3
         image: paavan24/api_3:11
+        imagePullPolicy: Always
         ports:
         - containerPort: 8003
         # 2. ADDED: Mount the shared file right into your app working directory
