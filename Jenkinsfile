@@ -24,11 +24,14 @@ pipeline {
                 // Use single quotes ('') for the shell command to prevent Groovy interpolation
                 sh 'echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USER_VAR}" --password-stdin'
                 
-                def services = ['api_1', 'api_2', 'api_3', 'products']
+                def services = ['api_1', 'api_2', 'api_3']
                 services.each { name ->
                     sh "docker build -t ${DOCKER_USER}/${name}:${env.BUILD_NUMBER} ./${name}"
                     sh "docker push ${DOCKER_USER}/${name}:${env.BUILD_NUMBER}"
                 }
+
+                sh "docker build -t ${DOCKER_USER}/products:latest ./products"
+                sh "docker push ${DOCKER_USER}/products:latest"
                 
                 sh "docker build -t ${DOCKER_USER}/frontend:${env.BUILD_NUMBER} ./frontend"
                 sh "docker push ${DOCKER_USER}/frontend:${env.BUILD_NUMBER}"
