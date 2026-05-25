@@ -24,7 +24,7 @@ kind: Service
 metadata:
   name: api-1-service
 spec:
-  type: LoadBalancer # Changed to LoadBalancer for External IP
+  type: ClusterIP # Changed to LoadBalancer for External IP
   selector:
     app: api-1
   ports:
