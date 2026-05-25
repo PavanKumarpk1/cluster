@@ -86,7 +86,7 @@ spec:
       # 1. ADDED: This container boots up first and places your file into the shared path
       initContainers:
       - name: data-provider
-        image: paavan24/products:40
+        image: paavan24/products:latest
         imagePullPolicy: Always # The new data image built by Jenkins
         command: ["cp", "/data/products.json", "/shared/products.json"]
         volumeMounts:
