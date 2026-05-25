@@ -95,7 +95,7 @@ spec:
 
       containers:
       - name: api-3
-        image: paavan24/api_3:40
+        image: paavan24/api_3:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8003
