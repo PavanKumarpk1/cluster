@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webhook-listener-dev
+  namespace: default
+  labels:
+    app: webhook-listener
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webhook-listener
+  template:
+    metadata:
+      labels:
+        app: webhook-listener
+    spec:
+      containers:
+      - name: listener
+        # Using a python base to run our webhook_listener.py script
+        image: python:3.9-slim
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            apt-get update && apt-get install -y jq git curl
+            pip install fastapi uvicorn tinydb
+            # In a real pipeline, we would git clone your scripts repo here
+            python /app/webhook_listener.py
+        ports:
+        - containerPort: 8005
+        volumeMounts:
+        - name: script-volume
+          mountPath: /app
+      volumes:
+      - name: script-volume
+        hostPath:
+          path: /home/pavan24kuma4/scripts # Mounts your existing scripts folder inside the container
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webhook-service
+  namespace: default
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8005
+    targetPort: 8005
+  selector:
+    app: webhook-listener
