@@ -46,7 +46,7 @@ pipeline {
             // 2. Patch the deployments with the NEW image versions we just built
             sh "kubectl set image deployment/store-api-1 api-1=${DOCKER_USER}/api_1:${env.BUILD_NUMBER}"
             sh "kubectl set image deployment/store-api-2 api-2=${DOCKER_USER}/api_2:${env.BUILD_NUMBER}"
-            sh "kubectl set image deployment/store-products products=${DOCKER_USER}/products:${env.BUILD_NUMBER}"
+            //sh "kubectl set image deployment/store-products products=${DOCKER_USER}/products:${env.BUILD_NUMBER}"
             // Add api-3 here if needed...
             sh "kubectl set image deployment/store-ui ui=${DOCKER_USER}/frontend:${env.BUILD_NUMBER}"
             
