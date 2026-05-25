@@ -1,10 +1,5 @@
 [
   {
-    "name": "Production Kubernetes Blueprint",
-    "price": 49,
-    "image_url": "https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?w=500&auto=format&fit=crop"
-  },
-  {
     "name": "Automated Terraform Infrastructure Pack",
     "price": 79,
     "image_url": "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=500&auto=format&fit=crop"
