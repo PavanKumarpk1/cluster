@@ -17,20 +17,20 @@ spec:
       - name: api-1
         image: paavan24/api_1:12
         ports:
-        - containerPort: 8001 # Matches your app code
+        - containerPort: 8001
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: api-1-service
 spec:
-  type: ClusterIP # Changed to LoadBalancer for External IP
+  type: ClusterIP
   selector:
     app: api-1
   ports:
     - protocol: TCP
-      port: 80         # Port exposed to the Frontend
-      targetPort: 8001 # Routes to the app's internal port
+      port: 80         
+      targetPort: 8001
 
 # --- API 2 (Port 8002) ---
 ---
@@ -59,7 +59,7 @@ kind: Service
 metadata:
   name: api-2-service
 spec:
-  type: ClusterIP # Changed to LoadBalancer
+  type: ClusterIP
   selector:
     app: api-2
   ports:
@@ -67,7 +67,7 @@ spec:
       port: 80
       targetPort: 8002
 
-# --- API 3 (Port 8003) ---
+# --- API 3 (Port 8003) - UPDATED WITH DATA INJECTION ---
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -83,18 +83,37 @@ spec:
       labels:
         app: api-3
     spec:
+      # 1. ADDED: This container boots up first and places your file into the shared path
+      initContainers:
+      - name: data-provider
+        image: paavan24/api_3_data:latest  # The new data image built by Jenkins
+        command: ["cp", "/data/products.json", "/shared/products.json"]
+        volumeMounts:
+        - name: product-data-volume
+          mountPath: /shared
+
       containers:
       - name: api-3
         image: paavan24/api_3:11
         ports:
         - containerPort: 8003
+        # 2. ADDED: Mount the shared file right into your app working directory
+        volumeMounts:
+        - name: product-data-volume
+          mountPath: /app/products.json
+          subPath: products.json
+
+      # 3. ADDED: Shared temporary volume layer
+      volumes:
+      - name: product-data-volume
+        emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: api-3-service
 spec:
-  type: LoadBalancer # Changed to LoadBalancer
+  type: LoadBalancer
   selector:
     app: api-3
   ports:
@@ -123,7 +142,7 @@ spec:
         image: paavan24/frontend:latest
         ports:
         - containerPort: 80
-        resources:           # <--- This is the part you need
+        resources:
           requests:
             cpu: "100m"
 ---
