@@ -83,12 +83,19 @@ spec:
       labels:
         app: api-3
     spec:
-      # 1. ADDED: This container boots up first and places your file into the shared path
+      # 1. FIXED: Init container now explicitly creates and populates both files
       initContainers:
       - name: data-provider
         image: paavan24/products:latest
-        imagePullPolicy: Always # The new data image built by Jenkins
-        command: ["cp", "/data/products.json", "/shared/db.json"]
+        imagePullPolicy: Always
+        command: 
+        - /bin/sh
+        - -c
+        - |
+          cd /shared
+          touch products.json db.json
+          cp /data/products.json /shared/products.json
+          cp /shared/products.json /shared/db.json
         volumeMounts:
         - name: product-data-volume
           mountPath: /shared
@@ -99,13 +106,16 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 8003
-        # 2. ADDED: Mount the shared file right into your app working directory
+        # 2. FIXED: Mount both subPaths into /app so they match your verification strategy
         volumeMounts:
         - name: product-data-volume
           mountPath: /app/products.json
           subPath: products.json
+        - name: product-data-volume
+          mountPath: /app/db.json
+          subPath: db.json
 
-      # 3. ADDED: Shared temporary volume layer
+      # 3. Shared temporary volume layer
       volumes:
       - name: product-data-volume
         emptyDir: {}
