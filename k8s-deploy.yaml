@@ -108,12 +108,9 @@ spec:
         - containerPort: 8003
         # 2. FIXED: Mount both subPaths into /app so they match your verification strategy
         volumeMounts:
-        - name: product-data-volume
-          mountPath: /app/products.json
-          subPath: products.json
-        - name: product-data-volume
-          mountPath: /app/db.json
-          subPath: db.json
+        - name: json-data
+          configMap:
+            name: product-data
 
       # 3. Shared temporary volume layer
       volumes:
