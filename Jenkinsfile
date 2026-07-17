@@ -33,7 +33,7 @@ pipeline {
                         dir('Docker') {
                             echo "Building all images with the correct tags..."
                             // This reads the image: definitions we added to the compose file
-                            sh "docker compose build"
+                            sh "docker-compose build"
                             
                             echo "Pushing all built images to Docker Hub..."
                             sh "docker compose push"
