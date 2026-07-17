@@ -31,8 +31,7 @@ pipeline {
                     script {
                         sh 'echo "${DOCKER_PASS}" | docker login -u "${DOCKER_USER}" --password-stdin'
                         
-                        // Creates: paavan24/my-test-app:BUILD_NUMBER
-                        def fullImage = "${DOCKER_USER}/${env.IMAGE_NAME}:${env.BUILD_NUMBER}"
+                        def fullImage = "${env.DOCKER_USER}/${env.IMAGE_NAME}:${env.BUILD_NUMBER}"
                         
                         echo "=========================================="
                         echo "BUILDING & PUSHING: ${fullImage}"
@@ -47,7 +46,11 @@ pipeline {
 
         stage('Deploy to GKE Cluster') {
             steps {
-                withCredentials([file(credentialsId: env.GCP_KEY_CREDS_ID, variable: 'GKE_KEY')]) {
+                // Re-bind the docker credentials here so DOCKER_USER is safely available for the deployment command
+                withCredentials([
+                    usernamePassword(credentialsId: env.DOCKER_CREDS_ID, passwordVariable: 'DOCKER_PASS', usernameVariable: 'DOCKER_USER'),
+                    file(credentialsId: env.GCP_KEY_CREDS_ID, variable: 'GKE_KEY')
+                ]) {
                     withEnv([
                         'KUBERNETES_SERVICE_HOST=', 
                         'KUBERNETES_SERVICE_PORT='
@@ -56,17 +59,16 @@ pipeline {
                             sh "gcloud auth activate-service-account --key-file=\$GKE_KEY --project=${env.GCP_PROJECT_ID}"
                             sh "gcloud container clusters get-credentials ${env.GKE_CLUSTER_NAME} --zone ${env.GKE_ZONE} --project=${env.GCP_PROJECT_ID}"
                             
-                            // Applies the manifest which generates 'deployment.apps/my-web-app'
                             sh "kubectl apply -f deployment.yaml"
                             
                             echo "=========================================="
                             echo "UPDATING KUBERNETES DEPLOYMENT IMAGE..."
                             echo "=========================================="
                             
-                            // Dynamic fallback syntax to match the deployment layout from your logs
+                            // Using standard shell variables instead of Groovy string interpolation to avoid scope cracks
                             sh """
                                 container_name=\$(kubectl get deployment my-web-app -o jsonpath='{.spec.template.spec.containers[0].name}')
-                                kubectl set image deployment/my-web-app \$container_name=${DOCKER_USER}/${env.IMAGE_NAME}:${env.BUILD_NUMBER}
+                                kubectl set image deployment/my-web-app \${container_name}=\${DOCKER_USER}/${env.IMAGE_NAME}:${env.BUILD_NUMBER}
                             """
                             
                             echo "Verifying rollout status..."
