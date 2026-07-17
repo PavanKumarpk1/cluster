@@ -41,18 +41,32 @@ pipeline {
  
         stage('Deploy to GKE') {
             steps {
-                script {
-                    // FIX: k8s-deploy.yaml is also at the root level, no dir() change needed
-                    // 1. Ensure the base structure exists (Deployments & Services)
-                    sh "kubectl apply -f k8s-deploy.yaml"
-         
-                    // 2. Patch the deployments with the NEW image versions we just built
-                    sh "kubectl set image deployment/store-api-1 api-1=${DOCKER_USER}/api_1:${env.BUILD_NUMBER}"
-                    sh "kubectl set image deployment/store-api-2 api-2=${DOCKER_USER}/api_2:${env.BUILD_NUMBER}"
-                    sh "kubectl set image deployment/store-api-3 api-3=${DOCKER_USER}/api_3:${env.BUILD_NUMBER}"
-                    sh "kubectl set image deployment/store-ui ui=${DOCKER_USER}/frontend:${env.BUILD_NUMBER}"
-                    
-                    echo "Deployment successful! Check 'kubectl get svc' for the UI External IP."
+                // Bind your GCP cluster access key safely
+                withCredentials([file(credentialsId: 'gke-deploy-key', variable: 'GKE_KEY')]) {
+                    // Block Jenkins networking variables from bleeding into kubectl
+                    withEnv([
+                        'KUBERNETES_SERVICE_HOST=', 
+                        'KUBERNETES_SERVICE_PORT='
+                    ]) {
+                        script {
+                            echo "Authenticating with Google Cloud Platform..."
+                            sh "gcloud auth activate-service-account --key-file=\$GKE_KEY --project=project-0a90b5af-55e0-4752-866"
+                            
+                            echo "Fetching GKE cluster credentials..."
+                            sh "gcloud container clusters get-credentials production-gke-cluster --zone us-east1-b --project=project-0a90b5af-55e0-4752-866"
+                            
+                            echo "Applying Kubernetes Manifests..."
+                            sh "kubectl apply -f k8s-deploy.yaml"
+                 
+                            echo "Updating deployment container images..."
+                            sh "kubectl set image deployment/store-api-1 api-1=${DOCKER_USER}/api_1:${env.BUILD_NUMBER}"
+                            sh "kubectl set image deployment/store-api-2 api-2=${DOCKER_USER}/api_2:${env.BUILD_NUMBER}"
+                            sh "kubectl set image deployment/store-api-3 api-3=${DOCKER_USER}/api_3:${env.BUILD_NUMBER}"
+                            sh "kubectl set image deployment/store-ui ui=${DOCKER_USER}/frontend:${env.BUILD_NUMBER}"
+                            
+                            echo "Deployment successful! Check 'kubectl get svc' for the UI External IP."
+                        }
+                    }
                 }
             }
         }
