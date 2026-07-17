@@ -33,7 +33,7 @@ pipeline {
                         // Move into the Docker folder where docker-compose.yml lives
                         dir('Docker') {
                             echo "Building all services using Docker Compose..."
-                            sh "docker compose build"
+                            sh "docker compose --build"
                             
                             echo "Tagging and Pushing services to Docker Hub..."
                             // Because docker compose builds them locally, we tag them with the build number and push
