@@ -42,7 +42,7 @@ pipeline {
                             echo "=========================================="
                             
                             // FIX: Added the 'Docker/' folder prefix to target the build context path correctly
-                            sh "docker build -t ${imageName} ./Docker/${name}"
+                            sh "docker build -t ${imageName} ./cluster/${name}"
                             sh "docker push ${imageName}"
                         }
                     }
