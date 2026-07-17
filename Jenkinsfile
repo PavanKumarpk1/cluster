@@ -10,8 +10,6 @@ pipeline {
         GCP_KEY_CREDS_ID   = 'gcp-service-account-key'
         
         HOME               = '/tmp'
-        // This maps the Jenkins build number to the variable the compose file expects
-        BUILD_TAG          = "${env.BUILD_NUMBER}"
     }
 
     stages {
@@ -22,7 +20,7 @@ pipeline {
             }
         }
 
-        stage('Build & Push with Docker Compose') {
+        stage('Build & Push Images') {
             steps {
                 withCredentials([usernamePassword(credentialsId: env.DOCKER_CREDS_ID, 
                                                  passwordVariable: 'DOCKER_PASS', 
@@ -30,13 +28,20 @@ pipeline {
                     script {
                         sh 'echo "${DOCKER_PASS}" | docker login -u "${DOCKER_USER}" --password-stdin'
                         
+                        // Step directly into the Docker folder where the subdirectories live
                         dir('Docker') {
-                            echo "Building all images with the correct tags..."
-                            // This reads the image: definitions we added to the compose file
-                            sh "docker-compose build"
+                            def services = ['api_1', 'api_2', 'api_3', 'frontend']
                             
-                            echo "Pushing all built images to Docker Hub..."
-                            sh "docker compose push"
+                            services.each { name ->
+                                def imageName = "${DOCKER_USER}/${name}:${env.BUILD_NUMBER}"
+                                echo "=========================================="
+                                echo "Building and Pushing Image: ${imageName}"
+                                echo "=========================================="
+                                
+                                // Standard plain docker commands work everywhere
+                                sh "docker build -t ${imageName} ./${name}"
+                                sh "docker push ${imageName}"
+                            }
                         }
                     }
                 }
