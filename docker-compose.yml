@@ -1,5 +1,8 @@
+version: "3.8"
+
 services:
   api_1:
+    image: ${DOCKER_USER}/api_1:${BUILD_TAG}
     build: ./api_1
     ports:
       - "8001:5000"
@@ -7,13 +10,15 @@ services:
       - shared_storage:/data
 
   api_2:
+    image: ${DOCKER_USER}/api_2:${BUILD_TAG}
     build: ./api_2
     ports:
       - "8002:5000"
     volumes:
       - shared_storage:/data
 
-api_3:
+  api_3:
+    image: ${DOCKER_USER}/api_3:${BUILD_TAG}
     build: ./api_3
     ports:
       - "8003:8003"
@@ -22,6 +27,7 @@ api_3:
     restart: always
 
   ui:
+    image: ${DOCKER_USER}/frontend:${BUILD_TAG}
     build: ./frontend
     ports:
       - "80:80"
