@@ -19,8 +19,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 cleanWs()
-                // FIX: Clones the files directly into the root workspace directory
-                // instead of hiding them inside a 'simple-app-code' folder
+                // Clones down your GitHub repository code tree
                 git url: 'https://github.com/PavanKumarpk1/prj1.git', branch: 'main'
             }
         }
@@ -33,7 +32,7 @@ pipeline {
                     script {
                         sh 'echo "${DOCKER_PASS}" | docker login -u "${DOCKER_USER}" --password-stdin'
                         
-                        // Loops through directories now exposed at the root workspace layer
+                        // Define all services exactly as named in your folders
                         def services = ['api_1', 'api_2', 'api_3', 'frontend']
                         
                         services.each { name ->
@@ -42,7 +41,8 @@ pipeline {
                             echo "Building and Pushing Image: ${imageName}"
                             echo "=========================================="
                             
-                            sh "docker build -t ${imageName} ./${name}"
+                            // FIX: Added the 'Docker/' folder prefix to target the build context path correctly
+                            sh "docker build -t ${imageName} ./Docker/${name}"
                             sh "docker push ${imageName}"
                         }
                     }
@@ -69,7 +69,8 @@ pipeline {
                             echo "STEP 5: Deploying App to Kubernetes (GKE)"
                             echo "=========================================="
                             
-                            sh "kubectl apply -f k8s-deploy.yaml"
+                            // FIX: Points to the k8s-deploy file inside the Docker folder
+                            sh "kubectl apply -f ./Docker/k8s-deploy.yaml"
                             
                             sh "kubectl set image deployment/store-api-1 api-1=\${DOCKER_USER}/api_1:${env.BUILD_NUMBER}"
                             sh "kubectl set image deployment/store-api-2 api-2=\${DOCKER_USER}/api_2:${env.BUILD_NUMBER}"
