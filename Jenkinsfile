@@ -9,7 +9,7 @@ pipeline {
         
         // Credentials IDs
         DOCKER_CREDS_ID    = 'docker-hub-pass' 
-        GCP_KEY_CREDS_ID   = 'gcp-service-account-key'
+        GCP_KEY_CREDS_ID   = 'gke-deploy-key'  // 1st FIX: Updated to your exact credential ID
         
         HOME               = '/tmp'
         IMAGE_NAME         = 'my-test-app'
@@ -31,12 +31,19 @@ pipeline {
                     script {
                         sh 'echo "${DOCKER_PASS}" | docker login -u "${DOCKER_USER}" --password-stdin'
                         
-                        // Define the full image tag using the current workspace context
                         def fullImage = "${DOCKER_USER}/${env.IMAGE_NAME}:${env.BUILD_NUMBER}"
-                        echo "Building and Pushing Single App Image: ${fullImage}"
                         
-                        // We build from the current root directory '.' because the Dockerfile is right here!
+                        // 2nd FIX: Added verbose logging to clearly track the push process
+                        echo "=========================================="
+                        echo "TARGET IMAGE URL: https://hub.docker.com/r/${DOCKER_USER}/${env.IMAGE_NAME}"
+                        echo "BUILDING: ${fullImage}"
+                        echo "=========================================="
+                        
                         sh "docker build -t ${fullImage} ."
+                        
+                        echo "=========================================="
+                        echo "PUSHING TO DOCKER HUB..."
+                        echo "=========================================="
                         sh "docker push ${fullImage}"
                     }
                 }
@@ -54,11 +61,9 @@ pipeline {
                             sh "gcloud auth activate-service-account --key-file=\$GKE_KEY --project=${env.GCP_PROJECT_ID}"
                             sh "gcloud container clusters get-credentials ${env.GKE_CLUSTER_NAME} --zone ${env.GKE_ZONE} --project=${env.GCP_PROJECT_ID}"
                             
-                            // Appends deployment.yaml located right at the root
                             sh "kubectl apply -f deployment.yaml"
                             
-                            // Dynamically updates the image to the new tag we just pushed
-                            // Note: verify that the deployment name inside deployment.yaml matches 'my-web-deployment'
+                            // Note: verify that the deployment container configuration names match inside deployment.yaml
                             sh "kubectl set image deployment/my-web-deployment web-container=\${DOCKER_USER}/${env.IMAGE_NAME}:${env.BUILD_NUMBER}"
                         }
                     }
