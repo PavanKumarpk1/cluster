@@ -28,20 +28,17 @@ pipeline {
                     script {
                         sh 'echo "${DOCKER_PASS}" | docker login -u "${DOCKER_USER}" --password-stdin'
                         
-                        // Step directly into the Docker folder where the subdirectories live
-                        dir('Docker') {
-                            def services = ['api_1', 'api_2', 'api_3', 'frontend']
+                        def services = ['api_1', 'api_2', 'api_3', 'frontend']
+                        
+                        services.each { name ->
+                            def imageName = "${DOCKER_USER}/${name}:${env.BUILD_NUMBER}"
+                            echo "=========================================="
+                            echo "Building and Pushing Image: ${imageName}"
+                            echo "=========================================="
                             
-                            services.each { name ->
-                                def imageName = "${DOCKER_USER}/${name}:${env.BUILD_NUMBER}"
-                                echo "=========================================="
-                                echo "Building and Pushing Image: ${imageName}"
-                                echo "=========================================="
-                                
-                                // Standard plain docker commands work everywhere
-                                sh "docker build -t ${imageName} ./${name}"
-                                sh "docker push ${imageName}"
-                            }
+                            // FIX: Using absolute path targeting the capitalized 'Docker' directory
+                            sh "docker build -t ${imageName} \${WORKSPACE}/Docker/${name}"
+                            sh "docker push ${imageName}"
                         }
                     }
                 }
@@ -56,17 +53,16 @@ pipeline {
                         'KUBERNETES_SERVICE_PORT='
                     ]) {
                         script {
-                            dir('Docker') {
-                                sh "gcloud auth activate-service-account --key-file=\$GKE_KEY --project=${env.GCP_PROJECT_ID}"
-                                sh "gcloud container clusters get-credentials ${env.GKE_CLUSTER_NAME} --zone ${env.GKE_ZONE} --project=${env.GCP_PROJECT_ID}"
-                                
-                                sh "kubectl apply -f k8s-deploy.yaml"
-                                
-                                sh "kubectl set image deployment/store-api-1 api-1=\${DOCKER_USER}/api_1:${env.BUILD_NUMBER}"
-                                sh "kubectl set image deployment/store-api-2 api-2=\${DOCKER_USER}/api_2:${env.BUILD_NUMBER}"
-                                sh "kubectl set image deployment/store-api-3 api-3=\${DOCKER_USER}/api_3:${env.BUILD_NUMBER}"
-                                sh "kubectl set image deployment/store-ui ui=\${DOCKER_USER}/frontend:${env.BUILD_NUMBER}"
-                            }
+                            sh "gcloud auth activate-service-account --key-file=\$GKE_KEY --project=${env.GCP_PROJECT_ID}"
+                            sh "gcloud container clusters get-credentials ${env.GKE_CLUSTER_NAME} --zone ${env.GKE_ZONE} --project=${env.GCP_PROJECT_ID}"
+                            
+                            // FIX: Absolute path targeting k8s-deploy.yaml
+                            sh "kubectl apply -f \${WORKSPACE}/Docker/k8s-deploy.yaml"
+                            
+                            sh "kubectl set image deployment/store-api-1 api-1=\${DOCKER_USER}/api_1:${env.BUILD_NUMBER}"
+                            sh "kubectl set image deployment/store-api-2 api-2=\${DOCKER_USER}/api_2:${env.BUILD_NUMBER}"
+                            sh "kubectl set image deployment/store-api-3 api-3=\${DOCKER_USER}/api_3:${env.BUILD_NUMBER}"
+                            sh "kubectl set image deployment/store-ui ui=\${DOCKER_USER}/frontend:${env.BUILD_NUMBER}"
                         }
                     }
                 }
