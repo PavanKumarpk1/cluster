@@ -4,44 +4,43 @@ metadata:
   name: app-ingress
   annotations:
     kubernetes.io/ingress.class: "nginx"
-    # rewrite-target strips the "/api" prefix before passing the request to the microservice
     nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
   rules:
   - http:
       paths:
-      # 1. Routing to your Frontend App
+      # Routes to frontend UI
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: frontend-service  # Match your frontend K8s service name
+            name: ui-service  # Matches your UI Service Name
             port:
               number: 80
       
-      # 2. Routing to the Products Microservice
+      # Routes to products endpoint inside API 3
       - path: /api/products()(.*)
         pathType: ImplementationSpecific
         backend:
           service:
-            name: products-service  # Match your product microservice backend service name
+            name: api-3-service  # Matches your API 3 Service Name
             port:
               number: 80
 
-      # 3. Routing to the Write API
+      # Routes to write endpoints inside API 2
       - path: /api/write()(.*)
         pathType: ImplementationSpecific
         backend:
           service:
-            name: write-api-service  # Match your write backend service name
+            name: api-2-service  # Matches your API 2 Service Name
             port:
               number: 80
 
-      # 4. Routing to the Read API
+      # Routes to read endpoints inside API 1
       - path: /api/read()(.*)
         pathType: ImplementationSpecific
         backend:
           service:
-            name: read-api-service   # Match your read backend service name
+            name: api-1-service  # Matches your API 1 Service Name
             port:
               number: 80
