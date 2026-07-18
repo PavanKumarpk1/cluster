@@ -56,7 +56,6 @@ pipeline {
                             echo "Applying Kubernetes Manifests..."
                             sh "kubectl apply -f k8s-deploy.yaml"
                             
-                            // ADDED: Apply the Ingress rules so your single cloud load balancer gets spun up
                             echo "Applying Ingress Routing Manifest..."
                             sh "kubectl apply -f ingress.yaml"
                  
@@ -66,11 +65,6 @@ pipeline {
                             sh "kubectl set image deployment/store-api-3 api-3=${DOCKER_USER}/api_3:${env.BUILD_NUMBER}"
                             sh "kubectl set image deployment/store-ui ui=${DOCKER_USER}/frontend:${env.BUILD_NUMBER}"
                             
-                            // ADDED: Push the fresh image to your products deployment
-                            echo "Updating products deployment image..."
-                            sh "kubectl set image deployment/products-deployment products=${DOCKER_USER}/products:${env.BUILD_NUMBER}"
-                            
-                            // MODIFIED: Message updated to reflect Ingress model
                             echo "Deployment successful! Check 'kubectl get ingress app-ingress' for your single LoadBalancer IP."
                         }
                     }
