@@ -5,6 +5,12 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "gce"
 spec:
+  # FIX: Hardcodes your UI as the default handler, stopping the GKE 404 lookup loop
+  defaultBackend:
+    service:
+      name: ui-service
+      port:
+        number: 80
   rules:
   - http:
       paths:
