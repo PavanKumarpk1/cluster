@@ -13,7 +13,7 @@ spec:
   rules:
   - http:
       paths:
-      # 1. Route the admin page explicitly to your UI container
+      # 1. SPECIFIC PATHS FIRST
       - path: /admin.html
         pathType: Exact
         backend:
@@ -21,16 +21,7 @@ spec:
             name: ui-service
             port:
               number: 80
-
-      # 2. Route standard traffic to index.html
-      - path: /*
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: ui-service
-            port:
-              number: 80
-      
+              
       - path: /api/products/*
         pathType: ImplementationSpecific
         backend:
@@ -52,5 +43,14 @@ spec:
         backend:
           service:
             name: api-1-service
+            port:
+              number: 80
+
+      # 2. CATCH-ALL ROUTE ABSOLUTE LAST
+      - path: /*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: ui-service
             port:
               number: 80
