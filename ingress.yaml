@@ -5,7 +5,6 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "gce"
 spec:
-  # FIX: Hardcodes your UI as the default handler, stopping the GKE 404 lookup loop
   defaultBackend:
     service:
       name: ui-service
@@ -14,6 +13,16 @@ spec:
   rules:
   - http:
       paths:
+      # 1. Route the admin page explicitly to your UI container
+      - path: /admin.html
+        pathType: Exact
+        backend:
+          service:
+            name: ui-service
+            port:
+              number: 80
+
+      # 2. Route standard traffic to index.html
       - path: /*
         pathType: ImplementationSpecific
         backend:
