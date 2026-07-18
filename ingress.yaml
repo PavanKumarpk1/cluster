@@ -3,44 +3,39 @@ kind: Ingress
 metadata:
   name: app-ingress
   annotations:
-    kubernetes.io/ingress.class: "nginx"
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    kubernetes.io/ingress.class: "gce"
 spec:
   rules:
   - http:
       paths:
-      # Routes to frontend UI
-      - path: /
-        pathType: Prefix
+      - path: /*
+        pathType: ImplementationSpecific
         backend:
           service:
-            name: ui-service  # Matches your UI Service Name
+            name: ui-service
             port:
               number: 80
       
-      # Routes to products endpoint inside API 3
-      - path: /api/products()(.*)
+      - path: /api/products/*
         pathType: ImplementationSpecific
         backend:
           service:
-            name: api-3-service  # Matches your API 3 Service Name
+            name: api-3-service
             port:
               number: 80
 
-      # Routes to write endpoints inside API 2
-      - path: /api/write()(.*)
+      - path: /api/write/*
         pathType: ImplementationSpecific
         backend:
           service:
-            name: api-2-service  # Matches your API 2 Service Name
+            name: api-2-service
             port:
               number: 80
 
-      # Routes to read endpoints inside API 1
-      - path: /api/read()(.*)
+      - path: /api/read/*
         pathType: ImplementationSpecific
         backend:
           service:
-            name: api-1-service  # Matches your API 1 Service Name
+            name: api-1-service
             port:
               number: 80
