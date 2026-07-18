@@ -52,6 +52,9 @@ pipeline {
                             
                             echo "Fetching GKE cluster credentials..."
                             sh "gcloud container clusters get-credentials production-gke-cluster --zone us-east1-b --project=project-0a90b5af-55e0-4752-866"
+
+                            echo "backend -conflig"
+                            sh 'kubectl apply -f backend-config.yaml'
                             
                             echo "Applying Kubernetes Manifests..."
                             sh "kubectl apply -f k8s-deploy.yaml"
