@@ -24,7 +24,7 @@ kind: Service
 metadata:
   name: api-1-service
   annotations:
-    beta.cloud.google.com/backend-config: '{"default": "app-health-config"}'
+    cloud.google.com/backend-config: '{"ports": {"80": "app-health-config"}}'
 spec:
   type: ClusterIP
   selector:
@@ -61,7 +61,7 @@ kind: Service
 metadata:
   name: api-2-service
   annotations:
-    beta.cloud.google.com/backend-config: '{"default": "app-health-config"}'
+    cloud.google.com/backend-config: '{"ports": {"80": "app-health-config"}}'
 spec:
   type: ClusterIP
   selector:
@@ -129,7 +129,7 @@ kind: Service
 metadata:
   name: api-3-service
   annotations:
-    beta.cloud.google.com/backend-config: '{"default": "app-health-config"}'
+    cloud.google.com/backend-config: '{"ports": {"80": "app-health-config"}}'
 spec:
   type: ClusterIP
   selector:
@@ -169,7 +169,7 @@ kind: Service
 metadata:
   name: ui-service
   annotations:
-    beta.cloud.google.com/backend-config: '{"default": "app-health-config"}'
+    cloud.google.com/backend-config: '{"ports": {"80": "app-health-config"}}'
 spec:
   type: ClusterIP
   selector:
