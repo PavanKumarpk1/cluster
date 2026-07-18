@@ -22,15 +22,15 @@ pipeline {
                     script {
                         sh 'echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USER_VAR}" --password-stdin'
                         
-                        // FIX: Running directly from the root context where api_1, api_2, api_3 exist
                         def services = ['api_1', 'api_2', 'api_3']
                         services.each { name ->
                             sh "docker build -t ${DOCKER_USER}/${name}:${env.BUILD_NUMBER} ./${name}"
                             sh "docker push ${DOCKER_USER}/${name}:${env.BUILD_NUMBER}"
                         }
          
-                        sh "docker build -t ${DOCKER_USER}/products:latest ./products"
-                        sh "docker push ${DOCKER_USER}/products:latest"
+                        // MODIFIED: Changed :latest to use build numbers so Kubernetes always knows a new version exists
+                        sh "docker build -t ${DOCKER_USER}/products:${env.BUILD_NUMBER} ./products"
+                        sh "docker push ${DOCKER_USER}/products:${env.BUILD_NUMBER}"
                         
                         sh "docker build -t ${DOCKER_USER}/frontend:${env.BUILD_NUMBER} ./frontend"
                         sh "docker push ${DOCKER_USER}/frontend:${env.BUILD_NUMBER}"
@@ -41,9 +41,7 @@ pipeline {
  
         stage('Deploy to GKE') {
             steps {
-                // Bind your GCP cluster access key safely
                 withCredentials([file(credentialsId: 'gke-deploy-key', variable: 'GKE_KEY')]) {
-                    // Block Jenkins networking variables from bleeding into kubectl
                     withEnv([
                         'KUBERNETES_SERVICE_HOST=', 
                         'KUBERNETES_SERVICE_PORT='
@@ -57,6 +55,10 @@ pipeline {
                             
                             echo "Applying Kubernetes Manifests..."
                             sh "kubectl apply -f k8s-deploy.yaml"
+                            
+                            // ADDED: Apply the Ingress rules so your single cloud load balancer gets spun up
+                            echo "Applying Ingress Routing Manifest..."
+                            sh "kubectl apply -f ingress.yaml"
                  
                             echo "Updating deployment container images..."
                             sh "kubectl set image deployment/store-api-1 api-1=${DOCKER_USER}/api_1:${env.BUILD_NUMBER}"
@@ -64,7 +66,12 @@ pipeline {
                             sh "kubectl set image deployment/store-api-3 api-3=${DOCKER_USER}/api_3:${env.BUILD_NUMBER}"
                             sh "kubectl set image deployment/store-ui ui=${DOCKER_USER}/frontend:${env.BUILD_NUMBER}"
                             
-                            echo "Deployment successful! Check 'kubectl get svc' for the UI External IP."
+                            // ADDED: Push the fresh image to your products deployment
+                            echo "Updating products deployment image..."
+                            sh "kubectl set image deployment/products-deployment products=${DOCKER_USER}/products:${env.BUILD_NUMBER}"
+                            
+                            // MODIFIED: Message updated to reflect Ingress model
+                            echo "Deployment successful! Check 'kubectl get ingress app-ingress' for your single LoadBalancer IP."
                         }
                     }
                 }
