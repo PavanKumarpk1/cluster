@@ -16,6 +16,7 @@ spec:
       containers:
       - name: api-1
         image: paavan24/api_1:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8001
 ---
@@ -53,6 +54,7 @@ spec:
       containers:
       - name: api-2
         image: paavan24/api_2:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8002
 ---
@@ -149,6 +151,7 @@ spec:
       containers:
       - name: ui
         image: paavan24/frontend:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
         resources:
