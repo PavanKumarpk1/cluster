@@ -19,6 +19,13 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 8001
+        volumeMounts:             # <--- ADD THIS
+        - name: app-storage
+          mountPath: /data
+      volumes:                    # <--- ADD THIS
+      - name: app-storage
+        persistentVolumeClaim:
+          claimName: shared-api-disk
 ---
 apiVersion: v1
 kind: Service
@@ -34,6 +41,7 @@ spec:
     - protocol: TCP
       port: 80         
       targetPort: 8001
+      
 
 # --- API 2 (Port 8002) ---
 ---
@@ -57,6 +65,13 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
+        volumeMounts:             # <--- ADD THIS
+        - name: app-storage
+          mountPath: /data
+      volumes:                    # <--- ADD THIS
+      - name: app-storage
+        persistentVolumeClaim:
+          claimName: shared-api-disk
 ---
 apiVersion: v1
 kind: Service
