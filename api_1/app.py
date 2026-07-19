@@ -13,9 +13,16 @@ def health_check():
 def write_file():
     # Get the text sent from the frontend text box
     os.makedirs("/data", exist_ok=True)
+    data = request.get_json()
     
+    # 2. Extract the text field (adjust 'text' to match whatever key your frontend sends, e.g., 'entry' or 'input')
+    # If it's missing, we fall back to a safer default
+    user_text = data.get('text', 'No data provided') if data else 'No data provided'
+    
+    # 3. Write the actual user text to the shared Filestore disk
     with open("/data/memory.txt", "a") as f:
-        f.write("Your data entry\n")
+        f.write(f"{user_text}\n")
+        
     return jsonify({"status": "saved"}), 200
     
 
