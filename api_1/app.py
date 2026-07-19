@@ -11,13 +11,12 @@ def health_check():
 @app.route('/api/write/', methods=['POST'], strict_slashes=False)
 def write_file():
     # Get the text sent from the frontend text box
-    data = request.json.get('text_entry')
+    os.makedirs("/data", exist_ok=True)
     
-    if data:
-        with open("memory.txt", "a") as f:
-            f.write(data + "\n")
-        return jsonify({"message": "Saved successfully!"}), 201
-    return jsonify({"error": "No text provided"}), 400
+    with open("/data/memory.txt", "a") as f:
+        f.write("Your data entry\n")
+    return jsonify({"status": "saved"}), 200
+    
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8001)
