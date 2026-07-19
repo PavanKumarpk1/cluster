@@ -11,12 +11,14 @@ def health_check():
 
 @app.route('/api/read/', methods=['GET'])
 def read_file():
+    os.makedirs("/data", exist_ok=True) # Prevent crashes if file doesn't exist yet
+    
     if os.path.exists("/data/memory.txt"):
         with open("/data/memory.txt", "r") as f:
             entries = f.readlines()
-        # Clean up the lines and send as a JSON list
         return jsonify({"entries": [e.strip() for e in entries]})
     return jsonify({"entries": []})
+    
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
