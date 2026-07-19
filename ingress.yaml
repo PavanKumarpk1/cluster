@@ -30,7 +30,7 @@ spec:
             port:
               number: 80
 
-      - path: /api/write/*
+      - path: /api/write
         pathType: ImplementationSpecific
         backend:
           service:
@@ -38,7 +38,7 @@ spec:
             port:
               number: 80
 
-      - path: /api/read/*
+      - path: /api/read
         pathType: ImplementationSpecific
         backend:
           service:
