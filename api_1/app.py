@@ -4,7 +4,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/api/write/', methods=['POST'])
+@app.route('/api/write/', methods=['POST'], strict_slashes=False)
 def write_file():
     # Get the text sent from the frontend text box
     data = request.json.get('text_entry')
