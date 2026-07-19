@@ -68,7 +68,7 @@
         // --- EXISTING FUNCTIONS ---
         async function sendData() {
             const val = document.getElementById('userInput').value;
-            await fetch('/api/write', {
+            await fetch('/api/write/', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({text_entry: val})
@@ -78,7 +78,7 @@
         }
 
         async function getData() {
-            const response = await fetch('/api/read');
+            const response = await fetch('/api/read/');
             const data = await response.json();
             const list = document.getElementById('list');
             list.innerHTML = data.entries.map(item => `<li>${item}</li>`).join('');
