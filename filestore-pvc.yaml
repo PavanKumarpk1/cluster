@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: shared-api-disk
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: standard-rwx  # <--- FIX: Forces GKE to use Filestore instead of block storage
+  resources:
+    requests:
+      storage: 10Gi  # Note: GCP Filestore enterprise/standard instances often require a minimum of 1Ti capacity allocations depending on cluster version
