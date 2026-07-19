@@ -63,7 +63,7 @@ pipeline {
                             sh "kubectl apply -f ingress.yaml"
 
                             echo "Applying vm yml..."
-                            sh "kubectl apply -f shared-pvc.yaml"
+                            sh "kubectl apply -f filestore-pvc.yaml"
                  
                             echo "Updating deployment container images..."
                             sh "kubectl set image deployment/store-api-1 api-1=${DOCKER_USER}/api_1:${env.BUILD_NUMBER}"
