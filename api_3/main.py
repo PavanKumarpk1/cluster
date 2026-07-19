@@ -5,7 +5,7 @@ from tinydb import TinyDB, Query
 import uvicorn
 
 app = FastAPI()
-# This creates a file called db.json in your container
+# Points directly to the products.json file copied into the root
 db = TinyDB('products.json')
 
 app.add_middleware(
@@ -20,6 +20,7 @@ class Product(BaseModel):
     price: int
     image_url: str
 
+# Aligned with frontend fetch requests and Ingress path rules
 @app.get("/api/products")
 async def get_products():
     return db.all()
