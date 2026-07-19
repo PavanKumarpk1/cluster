@@ -25,6 +25,11 @@ class Product(BaseModel):
 async def get_products():
     return db.all()
 
+# ADD THIS: Health check endpoint for GCE Load Balancer
+@app.get("/")
+async def health_check():
+    return {"status": "healthy"}
+
 @app.post("/api/products")
 async def add_product(product: Product):
     db.insert(product.dict())
