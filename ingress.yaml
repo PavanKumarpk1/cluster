@@ -34,7 +34,7 @@ spec:
         pathType: ImplementationSpecific
         backend:
           service:
-            name: api-2-service
+            name: api-1-service
             port:
               number: 80
 
@@ -42,7 +42,7 @@ spec:
         pathType: ImplementationSpecific
         backend:
           service:
-            name: api-1-service
+            name: api-2-service
             port:
               number: 80
 
