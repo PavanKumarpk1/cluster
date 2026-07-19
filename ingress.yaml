@@ -36,7 +36,7 @@ spec:
           service:
             name: api-2-service
             port:
-              number: 8002
+              number: 80
 
       - path: /api/read/*
         pathType: ImplementationSpecific
@@ -44,7 +44,7 @@ spec:
           service:
             name: api-1-service
             port:
-              number: 8001
+              number: 80
 
       # 2. CATCH-ALL ROUTE ABSOLUTE LAST
       - path: /*
