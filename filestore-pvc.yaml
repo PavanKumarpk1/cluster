@@ -5,7 +5,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: enterprise-multishare-rwx
+  storageClassName: standard-rwx  # <--- FIX: Forces GKE to use Filestore instead of block storage
   resources:
     requests:
-      storage: 100Gi  # Supports 10Gi to 1Ti per share # Note: GCP Filestore enterprise/standard instances often require a minimum of 1Ti capacity allocations depending on cluster version
+      storage: 10Gi  # Note: GCP Filestore enterprise/standard instances often require a minimum of 1Ti capacity allocations depending on cluster version
