@@ -15,6 +15,17 @@ pipeline {
         }
  
         stage('Build & Push') {
+            // OPTIMIZATION: Only builds Docker images if application source files change.
+            // If you change ONLY your root YAML files, Jenkins skips this stage completely.
+            when {
+                anyOf {
+                    changeset 'api_1/**/*'
+                    changeset 'api_2/**/*'
+                    changeset 'api_3/**/*'
+                    changeset 'products/**/*'
+                    changeset 'frontend/**/*'
+                }
+            }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-pass', 
                                                  passwordVariable: 'DOCKER_PASSWORD', 
@@ -27,8 +38,7 @@ pipeline {
                             sh "docker build -t ${DOCKER_USER}/${name}:${env.BUILD_NUMBER} ./${name}"
                             sh "docker push ${DOCKER_USER}/${name}:${env.BUILD_NUMBER}"
                         }
-         
-                        // MODIFIED: Changed :latest to use build numbers so Kubernetes always knows a new version exists
+          
                         sh "docker build -t ${DOCKER_USER}/products:${env.BUILD_NUMBER} ./products"
                         sh "docker push ${DOCKER_USER}/products:${env.BUILD_NUMBER}"
                         
