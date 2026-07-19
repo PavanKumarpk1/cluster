@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: api-1
-        image: paavan24/api_1:12
+        image: paavan24/api_1:latest
         ports:
         - containerPort: 8001
 ---
@@ -103,7 +103,7 @@ spec:
 
       containers:
       - name: api-3
-        image: paavan24/api_3:51 # <-- Make sure to use the newly built image version
+        image: paavan24/api_3:latest # <-- Make sure to use the newly built image version
         imagePullPolicy: Always
         ports:
         - containerPort: 8003
