@@ -53,6 +53,9 @@ pipeline {
                             echo "Fetching GKE cluster credentials..."
                             sh "gcloud container clusters get-credentials production-gke-cluster --zone us-east1-b --project=project-0a90b5af-55e0-4752-866"
 
+                            echo "Applying vm yml..."
+                            sh "kubectl apply -f filestore-pvc.yaml"
+                            
                             echo "backend -conflig"
                             sh 'kubectl apply -f backend-config.yaml'
                             
@@ -61,9 +64,6 @@ pipeline {
                             
                             echo "Applying Ingress Routing Manifest..."
                             sh "kubectl apply -f ingress.yaml"
-
-                            echo "Applying vm yml..."
-                            sh "kubectl apply -f filestore-pvc.yaml"
                  
                             echo "Updating deployment container images..."
                             sh "kubectl set image deployment/store-api-1 api-1=${DOCKER_USER}/api_1:${env.BUILD_NUMBER}"
