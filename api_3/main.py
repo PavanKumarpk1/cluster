@@ -21,7 +21,7 @@ class Product(BaseModel):
     image_url: str
 
 # Aligned with frontend fetch requests and Ingress path rules
-@app.get("/api/products")
+@app.get("/api/products/")
 async def get_products():
     return db.all()
 
@@ -30,7 +30,7 @@ async def get_products():
 async def health_check():
     return {"status": "healthy"}
 
-@app.post("/api/products")
+@app.post("/api/products/")
 async def add_product(product: Product):
     db.insert(product.dict())
     return {"message": "Product added successfully"}
