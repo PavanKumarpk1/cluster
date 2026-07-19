@@ -6,7 +6,7 @@ import uvicorn
 
 app = FastAPI()
 # This creates a file called db.json in your container
-db = TinyDB('db.json')
+db = TinyDB('products.json')
 
 app.add_middleware(
     CORSMiddleware,
