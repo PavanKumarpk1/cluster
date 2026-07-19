@@ -20,16 +20,16 @@ class Product(BaseModel):
     price: int
     image_url: str
 
-@app.get("/products")
+@app.get("/api/products")
 async def get_products():
     return db.all()
 
-@app.post("/products")
+@app.post("/api/products")
 async def add_product(product: Product):
     db.insert(product.dict())
     return {"message": "Product added successfully"}
 
-@app.delete("/products/{name}")
+@app.delete("/api/products/{name}")
 async def delete_product(name: str):
     ProductQuery = Query()
     removed = db.remove(ProductQuery.name == name)
