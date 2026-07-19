@@ -17,15 +17,7 @@ pipeline {
         stage('Build & Push') {
             // OPTIMIZATION: Only builds Docker images if application source files change.
             // If you change ONLY your root YAML files, Jenkins skips this stage completely.
-            when {
-                anyOf {
-                    changeset 'api_1/**/*'
-                    changeset 'api_2/**/*'
-                    changeset 'api_3/**/*'
-                    changeset 'products/**/*'
-                    changeset 'frontend/**/*'
-                }
-            }
+           
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-pass', 
                                                  passwordVariable: 'DOCKER_PASSWORD', 
