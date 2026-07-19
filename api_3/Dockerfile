@@ -1,21 +1,17 @@
 FROM python:3.9-slim
 
-# Set the working directory inside the container
 WORKDIR /app
 
-# Copy requirements first to leverage Docker cache
 COPY requirements.txt .
-
-# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the code
 COPY . .
 
-# Ensure the database file exists and has permissions
-RUN touch db.json && chmod 666 db.json
+# FIX: Copy products.json right alongside main.py if it's in the repo
+# If it's inside a separate folder, change this path to: COPY products/products.json ./products.json
+COPY products.json ./products.json
+RUN chmod 666 products.json
 
 EXPOSE 8003
 
-# Run the app
 CMD ["python", "main.py"]
