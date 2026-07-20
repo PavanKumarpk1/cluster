@@ -39,7 +39,7 @@ spec:
               number: 80
 
       - path: /grafana
-        pathType: ImplementationSpecific
+        pathType: Prefix
         backend:
           service:
             name: grafana-service
