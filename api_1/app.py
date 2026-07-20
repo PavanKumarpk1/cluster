@@ -1,9 +1,12 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
+from prometheus_flask_exporter import PrometheusMetric
 
 app = Flask(__name__)
 CORS(app)
+
+metrics = PrometheusMetrics(app)
 
 @app.route('/', methods=['GET'])
 def health_check():
