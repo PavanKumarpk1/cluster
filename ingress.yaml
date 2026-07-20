@@ -39,21 +39,13 @@ spec:
               number: 80
 
       - path: /grafana
-        pathType: Exact
-        backend:
-          service:
-            name: grafana-service
-            port:
-              number: 80
-              
-      - path: /grafana/*
         pathType: ImplementationSpecific
         backend:
           service:
             name: grafana-service
             port:
               number: 80
-
+              
       - path: /api/read/*
         pathType: ImplementationSpecific
         backend:
