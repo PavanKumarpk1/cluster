@@ -1,7 +1,8 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
-from prometheus_flask_exporter import PrometheusMetric
+# CHANGE THIS LINE:
+from prometheus_flask_exporter import PrometheusMetrics  # <-- Added 's' at the end
 
 app = Flask(__name__)
 CORS(app)
