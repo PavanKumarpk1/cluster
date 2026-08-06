@@ -46,7 +46,8 @@ pipeline {
                 withCredentials([file(credentialsId: 'gke-key', variable: 'GKE_KEY')]) {
                     withEnv([
                         'KUBERNETES_SERVICE_HOST=', 
-                        'KUBERNETES_SERVICE_PORT='
+                        'KUBERNETES_SERVICE_PORT=',
+                        'USE_GKE_GCLOUD_AUTH_PLUGIN=true'
                     ]) {
                         script {
                             echo "Authenticating with Google Cloud Platform..."
