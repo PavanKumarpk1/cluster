@@ -43,7 +43,7 @@ pipeline {
  
         stage('Deploy to GKE') {
             steps {
-                withCredentials([file(credentialsId: 'gke-deploy-key', variable: 'GKE_KEY')]) {
+                withCredentials([file(credentialsId: 'gke-key', variable: 'GKE_KEY')]) {
                     withEnv([
                         'KUBERNETES_SERVICE_HOST=', 
                         'KUBERNETES_SERVICE_PORT='
