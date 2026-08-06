@@ -54,7 +54,7 @@ pipeline {
                             sh "gcloud auth activate-service-account --key-file=\$GKE_KEY --project=project-db7d5ca7-2225-46ff-985"
                             
                             echo "Fetching GKE cluster credentials..."
-                            sh "gcloud container clusters get-credentials production-gke-cluster --zone us-east1-b --project-db7d5ca7-2225-46ff-985"
+                            sh "gcloud container clusters get-credentials production-gke-cluster --zone us-east1-b --project=project-db7d5ca7-2225-46ff-985"
 
                             echo "Applying vm yml..."
                             sh "kubectl apply -f filestore-pvc.yaml"
